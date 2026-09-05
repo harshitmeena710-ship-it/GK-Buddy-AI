@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>GK Buddy AI</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+    <div class="app">
+
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <h2>🤖 GK Buddy AI</h2>
+
+            <button
+                class="new-chat-button"
+                onclick="newChat()">
+
+                🆕 New Chat
+
+            </button>
+
+
+            <div
+                id="chatHistory"
+                class="chat-history">
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CHAT -->
+
+        <main class="main">
+
+
+            <header>
+
+                <div>
+
+                    <h1>GK Buddy AI</h1>
+
+                    <p>Your intelligent AI assistant</p>
+
+                </div>
+
+
+                <div class="header-buttons">
+
+                    <button
+                        onclick="toggleDarkMode()"
+                        title="Dark Mode">
+
+                        🌙
+
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <div
+    id="chatBox"
+    class="chat-box">
+
+    <div class="welcome-screen">
+
+        <div class="welcome-icon">🤖</div>
+
+        <h2>Welcome to GK Buddy AI</h2>
+
+        <p>Your smart AI assistant for learning, knowledge and everyday questions.</p>
+
+        <div class="welcome-features">
+
+            <div>📚 Learn</div>
+            <div>🧠 Explore</div>
+            <div>🌐 Search</div>
+            <div>💡 Understand</div>
+
+        </div>
+
+    </div>
+
+</div>
+
+            <div class="suggestions">
+
+                <button
+                    onclick="askQuestion('Explain the Indian Constitution simply')">
+
+                    🇮🇳 Indian Constitution
+
+                </button>
+
+
+                <button
+                    onclick="askQuestion('Explain photosynthesis')">
+
+                    🌱 Science
+
+                </button>
+
+
+                <button
+                    onclick="askQuestion('Give me a general knowledge quiz')">
+
+                    🧠 GK Quiz
+
+                </button>
+
+            </div>
+
+
+            <div class="input-area">
+
+                <input
+                    type="text"
+                    id="questionInput"
+                    placeholder="Ask anything..."
+                    onkeydown="handleKey(event)"
+                >
+
+
+                <button onclick="sendQuestion()">
+
+                    Send 🚀
+
+                </button>
+
+            </div>
+
+
+        </main>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
