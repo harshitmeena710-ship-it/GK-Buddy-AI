@@ -8,7 +8,7 @@ const tavilyClient = tavily({
 });
 
 const app = express();
-const port = 3000;
+
 
 const client = new OpenAI({
     apiKey: process.env.GEMINI_API_KEY,
@@ -238,10 +238,10 @@ If the search results do not contain enough information, say so.
 
 });
 
-app.listen(port, () => {
+const port = process.env.PORT || 3000;
 
+app.listen(port, "0.0.0.0", () => {
     console.log(
-        `GK Buddy AI is running at http://localhost:${port}`
+        `GK Buddy AI is running on port ${port}`
     );
-
 });
