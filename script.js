@@ -202,8 +202,7 @@ async function switchChat(chatId) {
     currentChatId = chatId;
 
     try {
-        const imageRequest = /^(create|generate|make|draw|design)\b.*\b(image|picture|photo|illustration)\b/i.test(question);
-
+       const imageRequest = /\b(create|generate|make|draw|design)\b.*\b(image|picture|photo|illustration)\b/i.test(question);
         if (imageRequest) {
             const imageResponse = await fetch("/api/generate-image", {
                 method: "POST",
