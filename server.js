@@ -271,6 +271,7 @@ const port = process.env.PORT || 3000;
 
 
 app.post("/api/generate-image", async (req, res) => {
+    console.log("IMAGE GENERATION REQUEST RECEIVED:", req.body.prompt);
     try {
         const { prompt } = req.body;
 
