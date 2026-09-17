@@ -281,23 +281,26 @@ app.post("/api/generate-image", async (req, res) => {
             });
         }
 
-        const output = await replicate.run(
-            "black-forest-labs/flux-schnell",
-            {
-                input: {
-                    prompt: prompt.trim()
-                }
-            }
-        );
+        console.log("SENDING REQUEST TO REPLICATE...");
 
-        const imageUrl = Array.isArray(output) ? output[0] : output;
-
-        if (!imageUrl) {
-            return res.status(500).json({
-                error: "No image was generated."
-            });
+const output = await replicate.run(
+    "black-forest-labs/flux-schnell",
+    {
+        input: {
+            prompt: prompt.trim()
         }
+    }
+);
 
+console.log("REPLICATE RESPONSE RECEIVED");
+
+const imageUrl = Array.isArray(output) ? output[0] : output;
+
+if (!imageUrl) {
+    return res.status(500).json({
+        error: "No image was generated."
+    });
+}
         res.json({
             imageUrl: imageUrl
         });
