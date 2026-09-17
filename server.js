@@ -294,7 +294,8 @@ const output = await replicate.run(
 
 console.log("REPLICATE RESPONSE RECEIVED");
 
-const imageUrl = Array.isArray(output) ? output[0] : output;
+const imageFile = Array.isArray(output) ? output[0] : output;
+const imageUrl = imageFile.url();
 
 if (!imageUrl) {
     return res.status(500).json({
