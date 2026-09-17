@@ -129,7 +129,13 @@
 
 
             <div class="input-area">
-
+<input
+    type="file"
+    id="imageInput"
+    accept="image/*"
+    style="display:none"
+    onchange="handleImageUpload(event)"
+>
                 <input
                     type="text"
                     id="questionInput"
@@ -138,7 +144,8 @@
                 >
 
 
-                <button onclick="sendQuestion()">
+                <button onclick="document.getElementById('imageInput').click()">📷</button>
+                <button onclick="sendQuestion()">Send</button>
 
                     Send 🚀
 

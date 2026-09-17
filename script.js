@@ -1,4 +1,5 @@
-// Current chat
+let selectedImage = null;
+let selectedImageMimeType = null;
 let currentChatId = null;
 
 // Chat history stored in the browser
@@ -19,7 +20,24 @@ function addMessage(text, sender) {
 
     chatBox.scrollTop = chatBox.scrollHeight;
 }
+function handleImageUpload(event) {
+    const file = event.target.files[0];
 
+    if (!file) return;
+
+    selectedImageMimeType = file.type;
+
+    const reader = new FileReader();
+
+    reader.onload = function () {
+        selectedImage = reader.result.split(",")[1];
+        alert("Image data is ready! Size: " + selectedImage.length);
+        console.log("Image data ready:", selectedImage.length);
+        alert("Image selected successfully! 📷");
+    };
+
+    reader.readAsDataURL(file);
+}
 
 // Send question
 async function sendQuestion() {
@@ -33,7 +51,6 @@ async function sendQuestion() {
     addMessage(question, "user");
 
     input.value = "";
-
     addMessage("🤔 Thinking<span class=\"dots\">...</span>", "bot");
 
     try {
@@ -47,9 +64,11 @@ async function sendQuestion() {
             },
 
             body: JSON.stringify({
-                question: question,
-                chatId: currentChatId
-            })
+    question: question,
+    chatId: currentChatId,
+    image: selectedImage,
+    imageMimeType: selectedImageMimeType
+})
 
         });
 

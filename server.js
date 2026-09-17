@@ -1,12 +1,18 @@
 const express = require("express");
+const Replicate = require("replicate");
+const { GoogleGenAI } = require("@google/genai");
 const OpenAI = require("openai");
 const { tavily } = require("@tavily/core");
 require("dotenv").config();
-
+const googleAI = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY
+});
 const tavilyClient = tavily({
     apiKey: process.env.TAVILY_API_KEY
 });
-
+const replicate = new Replicate({
+    auth: process.env.REPLICATE_API_TOKEN
+});
 const app = express();
 
 
@@ -15,7 +21,7 @@ const client = new OpenAI({
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
 });
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(express.static(__dirname));
 
 function createConversation() {
@@ -123,6 +129,7 @@ app.post("/api/ask", async (req, res) => {
     try {
 
         const question = req.body.question;
+        const image = req.body.image;
         let chatId = req.body.chatId;
 
         if (!question) {
@@ -147,10 +154,11 @@ app.post("/api/ask", async (req, res) => {
         const conversation = conversations.get(chatId);
 
         conversation.push({
-            role: "user",
-            content: question
+         role: "user",
+         content: question
         });
-
+const imageData = req.body.image;
+const imageMimeType = req.body.imageMimeType;
         // Decide whether this question needs web search
         const searchWords = [
             "today",
@@ -169,6 +177,27 @@ app.post("/api/ask", async (req, res) => {
         );
 
         let messagesForAI = conversation;
+
+if (imageData) {
+    messagesForAI = [
+        ...conversation.slice(0, -1),
+        {
+            role: "user",
+            content: [
+                {
+                    type: "text",
+                    text: question
+                },
+                {
+                    type: "image_url",
+                    image_url: {
+                        url: `data:${imageMimeType};base64,${imageData}`
+                    }
+                }
+            ]
+        }
+    ];
+}
 let sources = [];
 
 if (needsSearch) {
@@ -240,6 +269,60 @@ If the search results do not contain enough information, say so.
 
 const port = process.env.PORT || 3000;
 
+
+app.post("/api/generate-image", async (req, res) => {
+    try {
+        const { prompt } = req.body;
+
+        if (!prompt || !prompt.trim()) {
+            return res.status(400).json({
+                error: "Please enter an image prompt."
+            });
+        }
+
+        const output = await replicate.run(
+            "black-forest-labs/flux-schnell",
+            {
+                input: {
+                    prompt: prompt.trim()
+                }
+            }
+        );
+
+        const imageUrl = Array.isArray(output) ? output[0] : output;
+
+        if (!imageUrl) {
+            return res.status(500).json({
+                error: "No image was generated."
+            });
+        }
+
+        res.json({
+            imageUrl: imageUrl
+        });
+
+    } catch (error) {
+        console.error("Replicate image generation error:", error);
+
+        res.status(500).json({
+            error: error.message
+        });
+    }
+});
+
+        res.json({
+            image: imagePart.inlineData.data,
+            mimeType: imagePart.inlineData.mimeType || "image/png"
+        });
+
+    } catch (error) {
+        console.error("Image generation error:", error);
+
+        res.status(500).json({
+            error: error.message
+        });
+    }
+   }); 
 app.listen(port, "0.0.0.0", () => {
     console.log(
         `GK Buddy AI is running on port ${port}`
