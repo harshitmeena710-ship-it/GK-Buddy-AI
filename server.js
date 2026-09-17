@@ -309,22 +309,12 @@ app.post("/api/generate-image", async (req, res) => {
         });
     }
 });
-
-        res.json({
-            image: imagePart.inlineData.data,
-            mimeType: imagePart.inlineData.mimeType || "image/png"
-        });
-
-    } catch (error) {
-        console.error("Image generation error:", error);
-
-        res.status(500).json({
-            error: error.message
-        });
-    }
-   }); 
 app.listen(port, "0.0.0.0", () => {
     console.log(
         `GK Buddy AI is running on port ${port}`
     );
 });
+      
+
+   
+     
