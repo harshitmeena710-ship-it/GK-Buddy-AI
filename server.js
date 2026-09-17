@@ -293,7 +293,7 @@ const output = await replicate.run(
 );
 
 console.log("REPLICATE RESPONSE RECEIVED");
-
+console.log("REPLICATE RAW OUTPUT:", output);
 const imageUrl = Array.isArray(output)
     ? output[0]
     : output;
