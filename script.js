@@ -202,7 +202,35 @@ async function switchChat(chatId) {
     currentChatId = chatId;
 
     try {
+        const imageRequest = /^(create|generate|make|draw|design)\b.*\b(image|picture|photo|illustration)\b/i.test(question);
 
+        if (imageRequest) {
+            const imageResponse = await fetch("/api/generate-image", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    prompt: question
+                })
+            });
+
+            const imageData = await imageResponse.json();
+
+            if (!imageResponse.ok) {
+                throw new Error(imageData.error || "Image generation failed.");
+            }
+
+            const messages = document.querySelectorAll(".message");
+            const botMessage = messages[messages.length - 1];
+
+            botMessage.innerHTML = `
+                <div>🎨 Here is your generated image:</div>
+                <img src="${imageData.imageUrl}" alt="Generated image" style="max-width:100%; border-radius:12px; margin-top:10px;">
+            `;
+
+            return;
+        }
         const response = await fetch(`/api/chat/${chatId}`);
 
         const data = await response.json();
