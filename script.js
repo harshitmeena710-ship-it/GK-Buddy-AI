@@ -45,143 +45,201 @@ async function sendQuestion() {
     const input = document.getElementById("questionInput");
 
     const question = input.value.trim();
-console.log("TEST: sendQuestion is running", question);
+
+    console.log("ANDROID TEST 12345", question);
+    alert("PASSED QUESTION CHECK");
     if (!question) return;
 
     addMessage(question, "user");
 
     input.value = "";
-    addMessage("🤔 Thinking<span class=\"dots\">...</span>", "bot");
+
+    addMessage(
+        "🤔 Thinking<span class=\"dots\">...</span>",
+        "bot"
+    );
 
     try {
-const imageRequest = ["image", "picture", "illustration"].some(word =>
-    question.toLowerCase().includes(word)
-);
 
-const photoTransformRequest =
-    selectedImage &&
-    selectedImageMimeType &&
-    !imageRequest;
-
-if (photoTransformRequest) {
-
-    const imageResponse = await fetch("/api/transform-image", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            prompt: question,
-            image: selectedImage,
-            imageMimeType: selectedImageMimeType
-        })
-    });
-
-    const imageData = await imageResponse.json();
-
-    if (!imageResponse.ok) {
-        throw new Error(
-            imageData.error || "Photo transformation failed."
+        const imageRequest = [
+            "image",
+            "picture",
+            "illustration"
+        ].some(word =>
+            question.toLowerCase().includes(word)
         );
-    }
 
-    const messages = document.querySelectorAll(".message");
-    const botMessage = messages[messages.length - 1];
+        const photoTransformRequest =
+            selectedImage &&
+            selectedImageMimeType &&
+            !imageRequest;
 
-    botMessage.innerHTML = `
-        <div>✨ Here is your transformed photo:</div>
-        <img
-            src="${imageData.imageUrl}"
-            alt="Transformed photo"
-            style="max-width:100%; border-radius:12px; margin-top:10px;"
-        >
-    `;
 
-    selectedImage = null;
-    selectedImageMimeType = null;
+        // PHOTO TRANSFORMATION
+        if (photoTransformRequest) {
 
-    document.getElementById("imageInput").value = "";
+            const imageResponse = await fetch(
+                "/api/transform-image",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        prompt: question,
+                        image: selectedImage,
+                        imageMimeType: selectedImageMimeType
+                    })
+                }
+            );
 
-    return;
-}
+            const imageData =
+                await imageResponse.json();
 
-if (imageRequest) {
+            if (!imageResponse.ok) {
+                throw new Error(
+                    imageData.error ||
+                    "Photo transformation failed."
+                );
+            }
 
-    const imageResponse = await fetch("/api/generate-image", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            prompt: question
-        })
-    });
+            const messages =
+                document.querySelectorAll(".message");
 
-    const imageData = await imageResponse.json();
+            const botMessage =
+                messages[messages.length - 1];
 
-    if (!imageResponse.ok) {
-        throw new Error(
-            imageData.error || "Image generation failed."
+            botMessage.innerHTML = `
+                <div>✨ Here is your transformed photo:</div>
+                <img
+                    src="${imageData.imageUrl}"
+                    alt="Transformed photo"
+                    style="max-width:100%; border-radius:12px; margin-top:10px;"
+                >
+            `;
+
+            selectedImage = null;
+            selectedImageMimeType = null;
+
+            document.getElementById("imageInput").value = "";
+
+            return;
+        }
+
+
+        // IMAGE GENERATION
+        if (imageRequest) {
+
+            const imageResponse = await fetch(
+                "/api/generate-image",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        prompt: question
+                    })
+                }
+            );
+
+            const imageData =
+                await imageResponse.json();
+
+            if (!imageResponse.ok) {
+                throw new Error(
+                    imageData.error ||
+                    "Image generation failed."
+                );
+            }
+
+            const messages =
+                document.querySelectorAll(".message");
+
+            const botMessage =
+                messages[messages.length - 1];
+
+            botMessage.innerHTML = `
+                <div>🎨 Here is your generated image:</div>
+                <img
+                    src="${imageData.imageUrl}"
+                    alt="Generated image"
+                    style="max-width:100%; border-radius:12px; margin-top:10px;"
+                >
+            `;
+
+            return;
+        }
+
+
+        // NORMAL AI CHAT
+        console.log("TEST: ABOUT TO CALL /api/ask");
+
+        const response = await fetch(
+            "/api/ask",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    question: question,
+                    chatId: currentChatId,
+                    image: selectedImage,
+                    imageMimeType: selectedImageMimeType
+                })
+            }
         );
-    }
 
-    const messages = document.querySelectorAll(".message");
-    const botMessage = messages[messages.length - 1];
+        console.log(
+            "TEST: /api/ask RESPONSE RECEIVED",
+            response.status
+        );
 
-    botMessage.innerHTML = `
-        <div>🎨 Here is your generated image:</div>
-        <img
-            src="${imageData.imageUrl}"
-            alt="Generated image"
-            style="max-width:100%; border-radius:12px; margin-top:10px;"
-        >
-    `;
+        const data =
+            await response.json();
 
-    return;
-}
-        const response =
-            await fetch("/api/new-chat", {
-                method: "POST"
-            });
+        if (!response.ok) {
+            throw new Error(
+                data.error || "AI request failed."
+            );
+        }
 
-        const data = await response.json();
+        const messages =
+            document.querySelectorAll(".message");
 
-        currentChatId = data.chatId;
+        const botMessage =
+            messages[messages.length - 1];
 
-        chatHistory.push({
-            id: currentChatId,
-            title: "New Conversation"
-        });
-
-        updateChatHistory();
-
-        document.getElementById("chatBox").innerHTML = `
-            <div class="message bot">
-                Hello! 👋 I am GK Buddy AI.<br>
-                New conversation started! 🆕
-            </div>
-        `;
-
-        document
-            .getElementById("questionInput")
-            .focus();
+        botMessage.textContent =
+            data.answer || data.response || "No answer received.";
 
     } catch (error) {
 
-        console.error("New chat error:", error);
+        console.error(
+            "sendQuestion error:",
+            error
+        );
+
+        const messages =
+            document.querySelectorAll(".message");
+
+        const botMessage =
+            messages[messages.length - 1];
+
+        botMessage.textContent =
+            "Sorry, something went wrong. 😔";
 
     }
 
 }
-
-
 // Switch chat
 async function switchChat(chatId) {
 
     currentChatId = chatId;
 
     try {
-     
+    
         const response = await fetch(`/api/chat/${chatId}`);
 
         const data = await response.json();
