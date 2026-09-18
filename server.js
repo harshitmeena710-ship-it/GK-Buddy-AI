@@ -321,6 +321,96 @@ if (!imageUrl) {
         });
     }
 });
+// ================= PHOTO TREND TRANSFORMATION =================
+
+app.post("/api/transform-image", async (req, res) => {
+    console.log("PHOTO TRANSFORMATION REQUEST RECEIVED");
+
+    try {
+        const {
+            prompt,
+            image,
+            imageMimeType
+        } = req.body;
+
+        if (!prompt || !prompt.trim()) {
+            return res.status(400).json({
+                error: "Please enter a transformation request."
+            });
+        }
+
+        if (!image) {
+            return res.status(400).json({
+                error: "Please upload a photo first."
+            });
+        }
+
+        console.log("Preparing uploaded image...");
+
+        const imageBuffer = Buffer.from(image, "base64");
+
+        console.log("Sending photo to FLUX Kontext Pro...");
+
+        const output = await replicate.run(
+            "black-forest-labs/flux-kontext-pro",
+            {
+                input: {
+                    prompt: `
+Transform the uploaded photo according to this request:
+
+${prompt.trim()}
+
+IMPORTANT:
+- Preserve the person's identity and recognizable facial features.
+- Preserve the main subject and composition unless the request specifically asks to change them.
+- Make the transformation visually high quality.
+- Keep natural proportions.
+- Create a polished finished image.
+                    `.trim(),
+
+                    input_image: imageBuffer,
+
+                    aspect_ratio: "match_input_image",
+
+                    output_format: "jpg",
+
+                    safety_tolerance: 2
+                }
+            }
+        );
+
+        console.log("FLUX KONTEXT RESPONSE RECEIVED");
+
+        const imageUrl = output && typeof output.url === "function"
+            ? output.url()
+            : output && output.url
+                ? output.url
+                : null;
+
+        if (!imageUrl) {
+            throw new Error("Replicate returned no transformed image.");
+        }
+
+        console.log("TRANSFORMED IMAGE URL RECEIVED");
+
+        res.json({
+            imageUrl: imageUrl
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Photo transformation error:",
+            error
+        );
+
+        res.status(500).json({
+            error: error.message || "Photo transformation failed."
+        });
+    }
+});
+
+// ================= END PHOTO TRANSFORMATION =================
 app.listen(port, "0.0.0.0", () => {
     console.log(
         `GK Buddy AI is running on port ${port}`
