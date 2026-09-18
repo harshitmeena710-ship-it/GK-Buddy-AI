@@ -152,6 +152,7 @@ async function sendQuestion() {
 
 
         // IMAGE GENERATION
+        console.log("ANDROID IMAGE GENERATION TEST");
         if (imageRequest) {
 
             const imageResponse = await fetch(
