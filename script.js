@@ -77,10 +77,26 @@ async function sendQuestion() {
         question.toLowerCase().includes(phrase)
     );
 
-        const photoTransformRequest =
-            selectedImage &&
-            selectedImageMimeType &&
-            !imageRequest;
+       const photoTransformRequest =
+    selectedImage &&
+    selectedImageMimeType &&
+    [
+        "transform",
+        "change",
+        "edit",
+        "modify",
+        "make it",
+        "turn it into",
+        "convert it",
+        "style",
+        "retro",
+        "90s",
+        "80s",
+        "cartoon",
+        "anime"
+    ].some(phrase =>
+        question.toLowerCase().includes(phrase)
+    );
 
 
         // PHOTO TRANSFORMATION
