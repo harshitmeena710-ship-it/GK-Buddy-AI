@@ -61,13 +61,21 @@ async function sendQuestion() {
 
     try {
 
-        const imageRequest = [
-            "image",
-            "picture",
-            "illustration"
-        ].some(word =>
-            question.toLowerCase().includes(word)
-        );
+        const imageRequest =
+    !selectedImage &&
+    [
+        "create an image",
+        "generate an image",
+        "make an image",
+        "draw an image",
+        "generate a picture",
+        "create a picture",
+        "make a picture",
+        "create an illustration",
+        "generate an illustration"
+    ].some(phrase =>
+        question.toLowerCase().includes(phrase)
+    );
 
         const photoTransformRequest =
             selectedImage &&
