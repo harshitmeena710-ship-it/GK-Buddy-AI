@@ -133,14 +133,26 @@ async function sendQuestion() {
             const botMessage =
                 messages[messages.length - 1];
 
-            botMessage.innerHTML = `
-                <div>✨ Here is your transformed photo:</div>
-                <img
-                    src="${imageData.imageUrl}"
-                    alt="Transformed photo"
-                    style="max-width:100%; border-radius:12px; margin-top:10px;"
-                >
-            `;
+               botMessage.innerHTML = `
+    <div>✨ Here is your transformed photo:</div>
+
+    <img
+        src="${imageData.imageUrl}"
+        alt="Transformed photo"
+        style="max-width:100%; border-radius:12px; margin-top:10px;"
+    >
+
+    <br>
+
+    <a
+        href="${imageData.imageUrl}"
+        download="gk-buddy-transformed-image.jpg"
+        target="_blank"
+        style="display:inline-block; margin-top:10px;"
+    >
+        ⬇️ Download Image
+    </a>
+`;
 
             selectedImage = null;
             selectedImageMimeType = null;
@@ -184,14 +196,26 @@ async function sendQuestion() {
             const botMessage =
                 messages[messages.length - 1];
 
-            botMessage.innerHTML = `
-                <div>🎨 Here is your generated image:</div>
-                <img
-                    src="${imageData.imageUrl}"
-                    alt="Generated image"
-                    style="max-width:100%; border-radius:12px; margin-top:10px;"
-                >
-            `;
+           botMessage.innerHTML = `
+    <div>🎨 Here is your generated image:</div>
+
+    <img
+        src="${imageData.imageUrl}"
+        alt="Generated image"
+        style="max-width:100%; border-radius:12px; margin-top:10px;"
+    >
+
+    <br>
+
+    <a
+        href="${imageData.imageUrl}"
+        download="gk-buddy-generated-image.jpg"
+        target="_blank"
+        style="display:inline-block; margin-top:10px;"
+    >
+        ⬇️ Download Image
+    </a>
+`;
 
             return;
         }
