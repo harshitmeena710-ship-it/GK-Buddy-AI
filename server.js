@@ -288,6 +288,9 @@ const output = await replicate.run(
     {
         input: {
             prompt: prompt.trim()
+        },
+        wait: {
+            type: "poll"
         }
     }
 );
