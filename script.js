@@ -134,7 +134,7 @@ async function sendQuestion() {
                 messages[messages.length - 1];
 
                botMessage.innerHTML = `
-    <div>✨ Here is your transformed photo:</div>
+    div>✨ Here is your transformed photo:</div>
 
     <img
         src="${imageData.imageUrl}"
@@ -147,7 +147,7 @@ async function sendQuestion() {
     <a
         href="${imageData.imageUrl}"
         download="gk-buddy-transformed-image.jpg"
-        target="_blank"
+        target="_self"
         style="display:inline-block; margin-top:10px;"
     >
         ⬇️ Download Image
@@ -163,7 +163,7 @@ async function sendQuestion() {
         }
 
 
-        // IMAGE GENERATION
+        // IMAGE GENERATI<ON
         console.log("ANDROID IMAGE GENERATION TEST");
         if (imageRequest) {
 
@@ -210,7 +210,7 @@ async function sendQuestion() {
     <a
         href="${imageData.imageUrl}"
         download="gk-buddy-generated-image.jpg"
-        target="_blank"
+        target="_self"
         style="display:inline-block; margin-top:10px;"
     >
         ⬇️ Download Image
