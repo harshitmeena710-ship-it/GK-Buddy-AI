@@ -20,7 +20,9 @@ const client = new OpenAI({
     apiKey: process.env.GEMINI_API_KEY,
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
 });
-
+const openaiClient = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+});
 app.use(express.json({ limit: "10mb" }));
 app.use(express.static(__dirname));
 
@@ -271,7 +273,8 @@ const port = process.env.PORT || 3000;
 
 
 app.post("/api/generate-image", async (req, res) => {
-    console.log("IMAGE GENERATION REQUEST RECEIVED:", req.body.prompt);
+    console.log("OPENAI IMAGE GENERATION REQUEST:", req.body.prompt);
+
     try {
         const { prompt } = req.body;
 
@@ -281,50 +284,49 @@ app.post("/api/generate-image", async (req, res) => {
             });
         }
 
-        console.log("SENDING REQUEST TO REPLICATE...");
+        const enhancedPrompt = `
+Create the requested image with high visual quality.
 
-const output = await replicate.run(
-    "black-forest-labs/flux-schnell",
-    {
-        input: {
-            prompt: prompt.trim()
-        },
-        wait: {
-            type: "poll"
+User request:
+${prompt.trim()}
+
+Follow the user's requested era, clothing, hairstyle, setting, photography style,
+lighting, colors, composition, and overall visual aesthetic as accurately as possible.
+If the user specifies a decade such as the 1980s or 1990s, make the period details
+visually authentic rather than merely adding a vintage filter.
+        `.trim();
+
+        console.log("SENDING REQUEST TO OPENAI...");
+
+        const result = await openaiClient.images.generate({
+            model: "gpt-image-2",
+            prompt: enhancedPrompt,
+            size: "1024x1024",
+            quality: "medium"
+        });
+
+        console.log("OPENAI IMAGE RESPONSE RECEIVED");
+
+        const imageBase64 = result.data?.[0]?.b64_json;
+
+        if (!imageBase64) {
+            throw new Error("OpenAI returned no image data.");
         }
-    }
-);
 
-console.log("REPLICATE RESPONSE RECEIVED");
-console.log("REPLICATE RAW OUTPUT:", output);
-const imageFile = Array.isArray(output) ? output[0] : output;
-const imageUrl = imageFile.url();
-
-if (!imageUrl) {
-    throw new Error("Replicate returned no image output.");
-}
-
-if (!imageUrl) {
-    return res.status(500).json({
-        error: "No image was generated."
-    });
-}
         res.json({
-            imageUrl: imageUrl
+            imageUrl: `data:image/png;base64,${imageBase64}`
         });
 
     } catch (error) {
-        console.error("Replicate image generation error:", error);
+        console.error("OpenAI image generation error:", error);
 
         res.status(500).json({
-            error: error.message
+            error: error.message || "Image generation failed."
         });
     }
 });
-// ================= PHOTO TREND TRANSFORMATION =================
-
 app.post("/api/transform-image", async (req, res) => {
-    console.log("PHOTO TRANSFORMATION REQUEST RECEIVED");
+    console.log("OPENAI PHOTO TRANSFORMATION REQUEST RECEIVED");
 
     try {
         const {
@@ -349,67 +351,55 @@ app.post("/api/transform-image", async (req, res) => {
 
         const imageBuffer = Buffer.from(image, "base64");
 
-        console.log("Sending photo to FLUX Kontext Pro...");
+        const enhancedPrompt = `
+Edit the uploaded photo according to the user's request.
 
-        const output = await replicate.run(
-            "black-forest-labs/flux-kontext-pro",
-            {
-                input: {
-                    prompt: `
-Transform the uploaded photo according to this request:
-
+User request:
 ${prompt.trim()}
 
 IMPORTANT:
 - Preserve the person's identity and recognizable facial features.
-- Preserve the main subject and composition unless the request specifically asks to change them.
-- Make the transformation visually high quality.
-- Keep natural proportions.
-- Create a polished finished image.
-                    `.trim(),
+- Preserve the person's natural appearance unless the request specifically asks for a change.
+- Make requested clothing, hairstyle, background, era, lighting and visual style changes clearly visible.
+- If a decade or historical era is requested, make the clothing, hairstyle, accessories, setting, photography, lighting and color treatment authentic to that period.
+- Do not merely apply a generic vintage filter.
+- Keep the result natural, coherent and high quality.
+`.trim();
 
-                    input_image: imageBuffer,
+        console.log("SENDING PHOTO TO OPENAI...");
 
-                    aspect_ratio: "match_input_image",
+        const result = await openaiClient.images.edit({
+         model: "gpt-image-2",
+            image: new File(
+                [imageBuffer],
+                "uploaded-image",
+                { type: imageMimeType || "image/jpeg" }
+            ),
+            prompt: enhancedPrompt,
+            size: "1024x1024",
+            quality: "medium"
+        });
 
-                    output_format: "jpg",
+        console.log("OPENAI PHOTO TRANSFORMATION RESPONSE RECEIVED");
 
-                    safety_tolerance: 2
-                }
-            }
-        );
+        const imageBase64 = result.data?.[0]?.b64_json;
 
-        console.log("FLUX KONTEXT RESPONSE RECEIVED");
-
-        const imageUrl = output && typeof output.url === "function"
-            ? output.url()
-            : output && output.url
-                ? output.url
-                : null;
-
-        if (!imageUrl) {
-            throw new Error("Replicate returned no transformed image.");
+        if (!imageBase64) {
+            throw new Error("OpenAI returned no transformed image.");
         }
 
-        console.log("TRANSFORMED IMAGE URL RECEIVED");
-
         res.json({
-            imageUrl: imageUrl
+            imageUrl: `data:image/png;base64,${imageBase64}`
         });
 
     } catch (error) {
-
-        console.error(
-            "Photo transformation error:",
-            error
-        );
+        console.error("OpenAI photo transformation error:", error);
 
         res.status(500).json({
             error: error.message || "Photo transformation failed."
         });
     }
 });
-
 // ================= END PHOTO TRANSFORMATION =================
 app.listen(port, "0.0.0.0", () => {
     console.log(

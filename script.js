@@ -64,16 +64,81 @@ async function sendQuestion() {
         const imageRequest =
     !selectedImage &&
     [
-        "create an image",
-        "generate an image",
-        "make an image",
-        "draw an image",
-        "generate a picture",
-        "create a picture",
-        "make a picture",
-        "create an illustration",
-        "generate an illustration"
-    ].some(phrase =>
+    // English
+    "create an image",
+    "generate an image",
+    "make an image",
+    "draw an image",
+    "create image",
+    "generate image",
+    "make image",
+    "draw image",
+    "create a picture",
+    "generate a picture",
+    "make a picture",
+    "draw a picture",
+    "create a photo",
+    "generate a photo",
+    "make a photo",
+    "create a photograph",
+    "generate a photograph",
+    "create an illustration",
+    "generate an illustration",
+    "make an illustration",
+    "draw an illustration",
+    "create artwork",
+    "generate artwork",
+    "make artwork",
+    "draw artwork",
+    "design an image",
+    "design a picture",
+    "design a poster",
+    "create a poster",
+    "generate a poster",
+    "make a poster",
+    "create a logo",
+    "generate a logo",
+    "make a logo",
+
+    // Hindi
+    "इमेज बनाओ",
+    "इमेज बनाइए",
+    "इमेज बनाएं",
+    "चित्र बनाओ",
+    "चित्र बनाइए",
+    "चित्र बनाएं",
+    "फोटो बनाओ",
+    "फोटो बनाइए",
+    "फोटो बनाएं",
+    "तस्वीर बनाओ",
+    "तस्वीर बनाइए",
+    "तस्वीर बनाएं",
+    "चित्र तैयार करो",
+    "तस्वीर तैयार करो",
+    "पोस्टर बनाओ",
+    "पोस्टर बनाइए",
+    "लोगो बनाओ",
+    "लोगो बनाइए",
+
+    // Hinglish
+    "image banao",
+    "image bana do",
+    "image banaiye",
+    "image banaye",
+    "photo banao",
+    "photo bana do",
+    "photo banaiye",
+    "picture banao",
+    "picture bana do",
+    "tasveer banao",
+    "tasveer bana do",
+    "chitra banao",
+    "chitra bana do",
+    "poster banao",
+    "poster bana do",
+    "logo banao",
+    "logo bana do"
+].some(phrase =>
         question.toLowerCase().includes(phrase)
     );
 
@@ -303,10 +368,10 @@ async function switchChat(chatId) {
 
         if (data.messages.length === 0) {
 
-            addMessage(
-                "Hello! 👋 I am GK Buddy AI.\nContinue asking questions!",
-                "bot"
-            );
+           addMessage(
+"Hello! 👋 I am GK Buddy AI.\nContinue asking questions!",
+"bot"
+);
 
             return;
         }
