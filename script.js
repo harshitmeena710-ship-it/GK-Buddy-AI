@@ -312,7 +312,9 @@ async function sendQuestion() {
 
         const data =
             await response.json();
-
+if (data.chatId) {
+    currentChatId = data.chatId;
+}
         if (!response.ok) {
             throw new Error(
                 data.error || "AI request failed."
@@ -327,7 +329,7 @@ async function sendQuestion() {
 
         botMessage.textContent =
             data.answer || data.response || "No answer received.";
-
+loadChatHistory();
     } catch (error) {
 
         console.error(
@@ -437,3 +439,60 @@ function toggleDarkMode() {
     document.body.classList.toggle("dark");
 
 }
+async function newChat() {
+    try {
+        const response = await fetch("/api/new-chat", {
+            method: "POST"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Could not create new chat");
+        }
+
+        currentChatId = data.chatId;
+
+        document.getElementById("chatBox").innerHTML = `
+            <div class="message bot">
+                Hello! 👋 I am GK Buddy AI.<br>
+                How can I help you today?
+            </div>
+        `;
+
+        loadChatHistory();
+
+    } catch (error) {
+        console.error("New chat error:", error);
+    }
+}
+async function loadChatHistory() {
+    try {
+        const response = await fetch("/api/chats");
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Could not load chats");
+        }
+
+        const historyBox = document.getElementById("chatHistory");
+        historyBox.innerHTML = "";
+
+        data.chats.forEach(chat => {
+            const chatItem = document.createElement("div");
+
+            chatItem.className = "chat-history-item";
+            chatItem.textContent = chat.title || "New Chat";
+
+            chatItem.onclick = () => switchChat(chat.chatId);
+
+            historyBox.appendChild(chatItem);
+        });
+
+    } catch (error) {
+        console.error("Load chat history error:", error);
+    }
+}
+window.addEventListener("load", () => {
+    loadChatHistory();
+});

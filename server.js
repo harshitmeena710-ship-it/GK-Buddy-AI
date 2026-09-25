@@ -100,7 +100,31 @@ app.post("/api/new-chat", (req, res) => {
         chatId: chatId
     });
 });
+// Get all previous chats
+app.get("/api/chats", (req, res) => {
+    const chats = [];
 
+    for (const [chatId, conversation] of conversations.entries()) {
+        const userMessages = conversation.filter(
+            message => message.role === "user"
+        );
+
+        if (userMessages.length === 0) {
+            continue;
+        }
+
+        const firstMessage = userMessages[0].content;
+
+        chats.push({
+            chatId: chatId,
+            title: firstMessage.substring(0, 40)
+        });
+    }
+
+    res.json({
+        chats: chats.reverse()
+    });
+});
 // Get conversation messages
 app.get("/api/chat/:chatId", (req, res) => {
 
