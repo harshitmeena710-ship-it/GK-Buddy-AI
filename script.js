@@ -371,7 +371,7 @@ async function switchChat(chatId) {
         if (data.messages.length === 0) {
 
            addMessage(
-"Hello! 👋 I am GK Buddy AI.\nContinue asking questions!",
+"Hello! 👋 I am Zorvexa AI.\nContinue asking questions!",
 "bot"
 );
 
@@ -455,7 +455,7 @@ async function newChat() {
 
         document.getElementById("chatBox").innerHTML = `
             <div class="message bot">
-                Hello! 👋 I am GK Buddy AI.<br>
+                Hello! 👋 I am Zorvexa AI.<br>
                 How can I help you today?
             </div>
         `;
