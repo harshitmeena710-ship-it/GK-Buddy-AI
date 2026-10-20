@@ -17,14 +17,65 @@
 
 <body>
 
+<div id="authScreen" style="display:none;">
+    <div class="auth-card">
+        <h1>Zorvexa AI</h1>
+        <p>Your personal AI assistant</p>
+
+        <div class="auth-tabs">
+            <button type="button" id="loginTab">Login</button>
+            <button type="button" id="signupTab">Sign Up</button>
+        </div>
+
+        <button
+            type="button"
+            id="continueGuestButton"
+            class="guest-button">
+            Continue as Guest
+        </button>
+
+        <p class="guest-note">
+            Try Zorvexa AI without creating an account.
+        </p>
+
+        <form id="authForm">
+            <label for="authEmail">Email address</label>
+            <input
+                type="email"
+                id="authEmail"
+                placeholder="Enter your email"
+                required
+            >
+
+            <label for="authPassword">Password</label>
+            <input
+                type="password"
+                id="authPassword"
+                placeholder="Enter your password"
+                required
+                minlength="6"
+            >
+
+            <button type="submit" id="authSubmit">Login</button>
+            <p id="authMessage" role="status"></p>
+        </form>
+    </div>
+</div>
+
     <div class="app">
 
 
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR OVERLAY -->
+<div
+    id="sidebarOverlay"
+    class="sidebar-overlay"
+    onclick="closeSidebar()"
+    aria-hidden="true">
+</div>
 
-        <aside class="sidebar">
-
-            <h2>🤖 Zorvexa AI</h2>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <h2>🤖 Zorvexa AI</h2>
 
             <button
                 class="new-chat-button"
@@ -40,6 +91,15 @@
                 class="chat-history">
 
             </div>
+        
+<div class="sidebar-bottom">
+    <button
+        type="button"
+        id="logoutButton"
+        onclick="logoutUser()">
+        ↪ Logout
+    </button>
+</div>
 
         </aside>
 
@@ -50,7 +110,15 @@
 
 
             <header>
-
+        <button
+    id="sidebarToggle"
+    class="sidebar-toggle"
+    onclick="toggleSidebar()"
+    aria-label="Toggle sidebar"
+    aria-expanded="false"
+    >
+    ☰
+    </button>
                 <div>
 
                     <h1>Zorvexa AI</h1>
@@ -60,46 +128,113 @@
                 </div>
 
 
+               
                 <div class="header-buttons">
 
                     <button
+                        type="button"
                         onclick="toggleDarkMode()"
                         title="Dark Mode">
-
                         🌙
-
                     </button>
 
                 </div>
-
             </header>
 
+            <div id="chatBox" class="chat-box">
 
-            <div
-    id="chatBox"
-    class="chat-box">
+                
 
-    <div class="welcome-screen">
+                  <div class="welcome-screen">
+    <div class="welcome-icon" aria-hidden="true"></div>
 
-        <div class="welcome-icon">🤖</div>
+    <div class="welcome-content">
+        <span class="welcome-eyebrow">YOUR PERSONAL AI ASSISTANT</span>
 
-        <h2>Welcome to Zorvexa AI</h2>
+        <h2 id="welcomeTitle">
+            Intelligence, beautifully simple.
+        </h2>
 
-        <p>Your smart AI assistant for learning, knowledge and everyday questions.</p>
-
-        <div class="welcome-features">
-
-            <div>📚 Learn</div>
-            <div>🧠 Explore</div>
-            <div>🌐 Search</div>
-            <div>💡 Understand</div>
-
-        </div>
-
+        <p>
+            Ask anything, discover new ideas, create images,
+            and explore a world of knowledge.
+        </p>
     </div>
 
-</div>
+    <div class="welcome-features">
 
+<button
+    type="button"
+    class="welcome-feature intelligent-ui-feature"
+    id="intelligentUiToggle"
+    aria-pressed="false"
+    onclick="toggleIntelligentUI()"
+>
+    <span class="feature-icon">✦</span>
+    <span class="feature-text">
+        <strong>Intelligent UI <small class="intelligent-ui-new">NEW</small></strong>
+        <small>Explore smart, interactive AI answers</small>
+    </span>
+    <span class="feature-arrow">↗️</span>
+</button>
+
+<button
+    type="button"
+    class="welcome-feature"
+    id="videoGenerationToggle"
+    aria-pressed="false"
+    onclick="toggleVideoGenerationMode()"
+>
+    <span class="feature-icon">🎬</span>
+    <span class="feature-text">
+        <strong>Video Generation</strong>
+        <small>Create videos from your ideas</small>
+    </span>
+    <span class="feature-arrow">↗️</span>
+</button>
+
+        
+
+        <button
+            type="button"
+            class="welcome-feature"
+            onclick="askQuestion('Explain photosynthesis with examples')"
+        >
+            <span class="feature-icon">✳️</span>
+            <span class="feature-text">
+                <strong>Explore Science</strong>
+                <small>Discover how the world works</small>
+            </span>
+            <span class="feature-arrow">↗️</span>
+        </button>
+
+        <button
+            type="button"
+            class="welcome-feature"
+            onclick="askQuestion('Give me an interesting general knowledge quiz')"
+        >
+            <span class="feature-icon">⌘</span>
+            <span class="feature-text">
+                <strong>Knowledge Quiz</strong>
+                <small>Challenge your knowledge</small>
+            </span>
+            <span class="feature-arrow">↗️</span>
+        </button>
+
+        <button
+            type="button"
+            class="welcome-feature"
+            onclick="askQuestion('Give me some creative ideas for a new project')"
+        >
+            <span class="feature-icon">✧</span>
+            <span class="feature-text">
+                <strong>Creative Ideas</strong>
+                <small>Turn inspiration into action</small>
+            </span>
+            <span class="feature-arrow">↗️</span>
+        </button>
+    </div>
+</div>
             <div class="suggestions">
 
                 <button
@@ -126,41 +261,46 @@
                 </button>
 
             </div>
+</div>
 
+          
+<div id="imagePreview" style="display:none; width:100%; padding:8px 0; align-items:center; gap:10px;">
+    <img id="previewImage" alt="Selected photo preview"
+         style="max-width:180px; max-height:140px; object-fit:contain; border-radius:12px;">
+    <button type="button" onclick="removeSelectedImage()">
+        ✕ Remove photo
+    </button>
+</div>
 
-            <div class="input-area">
-<input
-    type="file"
-    id="imageInput"
-    accept="image/*"
-    style="display:none"
-    onchange="handleImageUpload(event)"
->
-                <input
-                    type="text"
-                    id="questionInput"
-                    placeholder="Ask anything..."
-                    onkeydown="handleKey(event)"
-                >
+<div class="input-area">
+    <input
+        type="file"
+        id="imageInput"
+        accept="image/*"
+        style="display:none"
+        onchange="handleImageUpload(event)"
+    >
 
+<textarea
+    id="questionInput"
+    placeholder="Ask anything..."
+    rows="1"
+    onkeydown="handleKey(event)"
+    oninput="autoResizeQuestionInput(this)"
+></textarea>
 
-                <button onclick="document.getElementById('imageInput').click()">📷</button>
-                <button onclick="sendQuestion()">Send</button>
+    <button
+        type="button"
+        id="voiceButton"
+        onclick="toggleVoiceInput()"
+        title="Voice input"
+        aria-label="Start voice input"
+    >🎙️</button>
 
-                    Send 🚀
-
-                </button>
-
-            </div>
-
-
-        </main>
-
-    </div>
-
-
-    <script src="script.js"></script>
-
+    <button type="button" onclick="document.getElementById('imageInput').click()">📷</button>
+    <button type="button" onclick="sendQuestion()">Send 🚀</button>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
 </body>
-
 </html>
