@@ -566,6 +566,7 @@ imageMimeType: submittedImageMimeType
         // NORMAL AI CHAT
         console.log("TEST: ABOUT TO CALL /api/ask");
 console.log("Text question:", question);
+console.log("TEST: Sending request to", window.location.origin + "/api/ask");
         const response = await authenticatedFetch(
     "/api/ask",
             {
