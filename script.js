@@ -19,11 +19,8 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
 );
+
 let currentChatId = null;
-
-
-
-
 
 async function authenticatedFetch(url, options = {}) {
     const sendRequest = async (token) => {

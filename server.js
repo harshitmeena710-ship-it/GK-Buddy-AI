@@ -33,11 +33,18 @@ async function requireAuth(req, res, next) {
 
         const { data, error } = await supabase.auth.getUser(token);
 
-        if (error || !data.user) {
-            return res.status(401).json({
-                error: "Invalid or expired session. Please log in again."
-            });
-        }
+if (error || !data.user) {
+    console.error("Supabase token verification failed:", {
+        message: error?.message,
+        status: error?.status,
+        code: error?.code,
+        hasUser: Boolean(data?.user)
+    });
+
+    return res.status(401).json({
+        error: "Invalid or expired session. Please log in again."
+    });
+}
 
         req.user = data.user;
         req.supabase = createClient(
