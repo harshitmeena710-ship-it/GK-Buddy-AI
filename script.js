@@ -19,29 +19,57 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
 );
+let currentChatId = null;
 
-// Authenticated requests to the ZORVEXA AI server
+
+
+
+
 async function authenticatedFetch(url, options = {}) {
-    const { data, error } = await supabaseClient.auth.getSession();
+    const sendRequest = async (token) => {
+        const headers = new Headers(options.headers || {});
+
+        if (token) {
+            headers.set("Authorization", `Bearer ${token}`);
+        } else {
+            headers.delete("Authorization");
+        }
+
+        return fetch(url, {
+            ...options,
+            headers
+        });
+    };
+
+    const {
+        data: { session },
+        error
+    } = await supabaseClient.auth.getSession();
 
     if (error) {
         throw error;
     }
 
-    const headers = new Headers(options.headers || {});
+    let response = await sendRequest(session?.access_token);
 
-    if (data.session?.access_token) {
-        headers.set(
-            "Authorization",
-            `Bearer ${data.session.access_token}`
+    if (response.status !== 401) {
+        return response;
+    }
+
+    const {
+        data: { session: refreshedSession },
+        error: refreshError
+    } = await supabaseClient.auth.refreshSession();
+
+    if (refreshError || !refreshedSession?.access_token) {
+        throw new Error(
+            "Your session could not be refreshed. Please sign out and sign in again."
         );
     }
 
-    return fetch(url, {
-        ...options,
-        headers
-    });
+    return sendRequest(refreshedSession.access_token);
 }
+
 function addMessage(content, sender) {
     const chatBox = document.getElementById("chatBox");
     if (!chatBox) return null;
@@ -60,8 +88,10 @@ function addMessage(content, sender) {
 
     return message;
 }
+
 console.log("Supabase library loaded:", !!window.supabase);
 console.log("Supabase URL configured:", !!SUPABASE_URL);
+
 // Selected image state
 
 
