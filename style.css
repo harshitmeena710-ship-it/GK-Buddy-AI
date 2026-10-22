@@ -1587,6 +1587,7 @@ body {
         box-sizing: border-box !important;
     }
 }
+
 /* Mobile sidebar backdrop */
 .sidebar-overlay {
     display: none;
@@ -1597,7 +1598,7 @@ body {
         display: block;
         position: fixed;
         inset: 0;
-        z-index: 19;
+        z-index: 9998;
         background: rgba(15, 10, 30, 0.42);
         opacity: 0;
         visibility: hidden;
@@ -1612,16 +1613,8 @@ body {
     }
 
     .sidebar {
-        z-index: 20 !important;
-    }
-}
-@media (max-width: 620px) {
-    #sidebarOverlay.is-visible {
-        display: block !important;
-        position: fixed !important;
-        inset: 0 !important;
-        z-index: 9998 !important;
-                pointer-events: auto;
+        position: fixed;
+        z-index: 9999 !important;
     }
 }
 
