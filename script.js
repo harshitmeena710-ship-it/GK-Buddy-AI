@@ -1,11 +1,84 @@
+
 const SUPABASE_URL = "https://iuhwntsgaaynvioyweiq.supabase.co";
 let selectedImage = null;
 let selectedImageMimeType = null;
 let guestChatHistory = [];
 // Image upload state
+function handleImageUpload(event) {
+    const input = event.target;
+    const file = input.files && input.files[0];
 
+    if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+        alert("Please select a valid image file.");
+        input.value = "";
+        return;
+    }
 
+    const previewContainer = document.getElementById("imagePreview");
+    const previewImage = document.getElementById("previewImage");
+
+    if (!previewContainer || !previewImage) {
+        console.error("Image preview elements were not found.");
+        alert("Image preview is unavailable. Please refresh the page.");
+        input.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function () {
+        if (typeof reader.result !== "string") {
+            alert("Could not read the selected image. Please try again.");
+            return;
+        }
+
+        const commaIndex = reader.result.indexOf(",");
+
+        if (commaIndex === -1) {
+            alert("The selected image could not be processed.");
+            return;
+        }
+
+        selectedImage = reader.result.slice(commaIndex + 1);
+        selectedImageMimeType = file.type;
+
+        previewImage.src = reader.result;
+        previewContainer.style.display = "flex";
+
+        console.log("Image uploaded and preview displayed:", file.name);
+    };
+
+    reader.onerror = function () {
+        console.error("Failed to read selected image.");
+        alert("Could not read the selected image. Please try again.");
+        removeSelectedImage();
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function removeSelectedImage() {
+    selectedImage = null;
+    selectedImageMimeType = null;
+
+    const input = document.getElementById("imageInput");
+    const previewContainer = document.getElementById("imagePreview");
+    const previewImage = document.getElementById("previewImage");
+
+    if (input) {
+        input.value = "";
+    }
+
+    if (previewImage) {
+        previewImage.removeAttribute("src");
+    }
+
+    if (previewContainer) {
+        previewContainer.style.display = "none";
+    }
+}
 // Supabase browser client
 // Replace the placeholder with your PUBLIC publishable/anon key.
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ODSCkw1QIhe-qa50404lGA_179KiztE";
@@ -604,8 +677,8 @@ console.log("TEST: Sending request to", window.location.origin + "/api/ask");
                 body: JSON.stringify({
                     question: question,
                     chatId: currentChatId,
-                    image: selectedImage,
-                    imageMimeType: selectedImageMimeType,
+                    image: submittedImage,
+imageMimeType: submittedImageMimeType,
                      intelligentUI: intelligentUIMode
                 })
             }
@@ -1573,7 +1646,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const overlay = document.getElementById("sidebarOverlay");
 
     if (overlay) {
-        overlay.addEventListener("click", closeSidebar);
+        overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) {
+        closeSidebar();
+    }
+});
     }
 });
 // Fix: close the mobile sidebar when tapping outside it.
